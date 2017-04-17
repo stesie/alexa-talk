@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "reveal-md talk.md",
+    "start": "reveal-md talk.md --theme my-custom --highlight-theme solarized-light --scripts mermaid.min.js,mermaid-config.js ",
+    "export": "reveal-md talk.md --theme my-custom --highlight-theme solarized-light --scripts mermaid.min.js,mermaid-config.js --static _static/ && cp -vR theme _static/theme",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Stefan Siegl <stesie@brokenpipe.de>",

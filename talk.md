@@ -2,9 +2,6 @@
 title: Hallo Alexa!
 separator: <!--s-->
 verticalSeparator: <!--v-->
-theme: my-custom
-highlightTheme: solarized-light
-scripts: mermaid.min.js,mermaid-config.js
 ---
 # Hallo Alexa!
 
