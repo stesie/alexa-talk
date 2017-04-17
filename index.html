@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Hallo Alexa!</title>
+        <link rel="stylesheet" href="./css/reveal.css">
+        <link rel="stylesheet" href="./theme/my-custom.css" id="theme">
+        <link rel="stylesheet" href="./css/highlight/solarized-light.css">
+        <link rel="stylesheet" href="./css/print/paper.css" type="text/css" media="print">
+
+    </head>
+    <body>
+
+        <div class="reveal">
+            <div class="slides"><section  data-markdown><script type="text/template">
+# Hallo Alexa!
+
+Stefan Siegl (<stefan.siegl@mayflower.de>)
+
+</script></section><section  data-markdown><script type="text/template">
+# Wer ist Alexa?
+
+* Amazon's *Alexa Voice Service* ist das sprachverarbeitende Backend
+* Frontends
+ * Amazon Echo
+ * Amazon Echo Dot
+ * Android App: u.a. Reverb
+ * Eigenbau: Raspberry Pi
+
+<aside class="notes"><p>Ansprachen:</p>
+<ul>
+<li>&quot;Alexa, wer bist du?&quot;</li>
+<li>&quot;Alexa, wie alt bist du?&quot;</li>
+</ul>
+<p>Lustigerweise geht &quot;Alexa, wie alt bist du eigentlich?&quot; nicht ;-)</p>
+</aside></script></section><section ><section data-markdown><script type="text/template">
+# Arten der Interaktion
+
+* Ansprache immer über Audio-Eingabe
+* Antwort dann mind. per Sprache
+* Skill kann in Alexa-App auch Karten anzeigen
+
+</script></section><section data-markdown><script type="text/template">
+# Skill Arten
+
+* Alexa-eigene Interaktionen
+* Custom Interaction Skill
+* Smart Home Skill
+* Flash Briefing Skill
+
+</script></section><section data-markdown><script type="text/template">
+## Alexa-eigene Interaktionen
+
+* wie ist das Wetter?
+* wird es morgen Regnen?
+* wecke mich um 6 Uhr morgens auf
+
+<aside class="notes"><ul>
+<li>diese Art von Interaktion kann leider nur Amazon bereitstellen</li>
+<li>Features Timer bzw. Wecker stellen können von einem third-party Skill
+auch nicht auf anderem Weg bereitgestellt werden
+(custom skills sind immer passiv)</li>
+</ul>
+</aside></script></section></section><section ><section data-markdown><script type="text/template">
+# Custom Skills
+
+* frage **Ken Guru** nach einem falschen Zitat
+* gib mir ein falsches Zitat von **Ken Guru**
+* frage **Widerstand Farbcodes** was sind die Farben für zehn Kiloohm
+
+<aside class="notes"><ul>
+<li>ein Custom Skill muss immer direkt angesprochen werden</li>
+<li>es muss immer der <em>invocation name</em> genannt werden</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+## Ansprache ohne weitere Absicht
+* Alexa, öffne     _invocation name_
+* Alexa, starte    _invocation name_
+* Alexa, spiele    _invocation name_
+* Alexa, sprich zu _invocation name_
+
+</script></section><section data-markdown><script type="text/template">
+## Ansprache mit Absicht
+* Alexa, frag'     _invocation name_ **intent**
+* Alexa, sage      _invocation name_ **intent**
+
+* Alexa, **intent** von   _invocation name_
+* Alexa, **intent** mit   _invocation name_
+
+</script></section><section data-markdown><script type="text/template">
+## Dialoge
+
+Beispiel aus Doku:
+
+* Alexa, **get high tide** from _tide pooler_.
+* For what city?
+* Seattle.
+* Wednesday February 17th in Seattle, ...
+
+<aside class="notes"><ul>
+<li>auch hier wieder der <em>invocation name</em> in der ersten Ansprache</li>
+<li>wenn der Skill eine Frage stellt, kann er die Session offen lassen</li>
+<li>das Alexa Framework kümmert sich dann ggf. auch um einen &quot;re-prompt&quot;</li>
+</ul>
+</aside></script></section></section><section ><section data-markdown><script type="text/template">
+# Smart Home Skills
+
+* Alexa enumeriert vorab die Geräte
+* Interaktionsmuster sind fest vorgegeben
+* Gerät muss nicht alles implementieren, nur soweit sinnvoll
+
+</script></section><section data-markdown><script type="text/template">
+## Beispiele
+
+* Alexa, suche meine Geräte
+* Schalte das **Licht im Schlafzimmer** ein
+* Dimme das **Licht im Wohnzimmer** auf 50%
+* Stelle die Temperatur im **Schlafzimmer** auf 23 Grad
+
+<aside class="notes"><ul>
+<li>Wenn man ein neues Gerät hat, muss man immer wieder die Geräte neu suchen lassen</li>
+<li>bei der inquiry gibt jedes Gerät einen eigenen &quot;friendly name&quot; an</li>
+<li>die Geräte können in der Alexa App in Gruppen zusammengefasst werden</li>
+</ul>
+</aside></script></section></section><section  data-markdown><script type="text/template">
+# Flash Briefing
+
+* Alexa, was sind die Nachrichten?
+* Alexa, was ist meine tägliche Zusammenfassung?
+* Alexa, gib mir meine tägliche Zusammenfassung
+
+<aside class="notes"><p>Ergebnis: von allen solchen Skills werden Meldungen eingesammelt
+und nacheinander vorgelesen.</p>
+</aside></script></section><section ><section data-markdown><script type="text/template">
+# Architektur
+
+<div class="mermaid">
+sequenceDiagram
+    participant Echo
+    participant App
+    participant AVS
+    participant Skill
+    Echo->>+AVS: Spracheingabe
+    Note right of AVS: Verarbeitung + Intent-Interpretation
+    AVS->>-Skill: JSON
+    activate Skill
+    Note right of Skill: Verarbeitung + ggf. Seiteneffekte
+    Skill->>AVS: SSML + Karte
+    deactivate Skill
+    AVS->>Echo: Sprachausgabe
+    AVS-->>App: Karte
+</div>
+
+</script></section><section data-markdown><script type="text/template">
+## Intent-Interpretation
+
+Custom Skill deklariert (pro Sprache)
+
+  * Intent Schema
+  * Sample Utterances
+
+Ein Intent kann Platzhalter enthalten: Slots
+
+Slots müssen wohldefiniert sein!
+
+</script></section><section data-markdown><script type="text/template">
+## Alexa ist ganz schön doof
+
+* wie Intent-Mapping geschieht, ist ein "Geheimnis" von Amazon
+* Slots haben Enumeration, kann aber auch "null" oder ganz was anderes sein
+
+<aside class="notes"><ul>
+<li>AVS macht zunächst Spracherkennung, hat dann Text</li>
+<li>(offenbar) relativ wenig Sprachanalyse, einfache String-Vergleiche</li>
+<li>Beispiel:<ul>
+<li>ein Skill hat zwei Intents, einen relativ kurz, der andere relativ lang</li>
+<li>auch wenn man jetzt totalen Unsinn redet, aber relativ viel sagt, dann wird
+Alexa den längeren der beiden Intents auslösen</li>
+</ul>
+</li>
+<li>bei Slots wichtig, dass Wortanzahl passt</li>
+<li>das mit den Slots und der Wortanzahl kann man auch für &quot;Freitext Slots&quot; verwenden,
+die es an sich nicht gibt</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+## Intent Schema
+
+```json
+{
+  "intents": [
+    {
+      "intent": "GetNewRandomQuoteIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
+```
+
+</script></section><section data-markdown><script type="text/template">
+## Sample Utterances
+
+```text
+GetNewRandomQuoteIntent nach einem Zitat
+GetNewRandomQuoteIntent nach einem falschen Zitat
+GetNewRandomQuoteIntent nach einem falschen Zitat vom Känguru
+GetNewRandomQuoteIntent sag mir ein Zitat
+GetNewRandomQuoteIntent sag mir ein falsches Zitat
+GetNewRandomQuoteIntent sage mir ein Zitat
+GetNewRandomQuoteIntent sage mir ein falsches Zitat
+GetNewRandomQuoteIntent gib mir ein Zitat
+GetNewRandomQuoteIntent gib mir ein falsches Zitat
+GetNewRandomQuoteIntent erzähle mir ein Zitat
+```
+
+</script></section></section><section ><section data-markdown><script type="text/template">
+# Vergleich
+
+|                       | Custom               | Smart Home          | Flash Briefing     |
+|-----------------------|----------------------|---------------------|--------------------|
+| Art der Kommunikation | frei                 | vorgegeben          | vorgegeben         |
+| Dialoge möglich?      | ja                   | nein                | nein               |
+| Ausgabe               | Text, ggf. Karte     | "ok"                | Text + Karte       |
+| SSML                  | ja                   | nein                | nein               |
+| eigenes Audio         | ja                   | nein                | ja                 |
+| OAuth                 | kann                 | muss                | nein               |
+| Backend               | HTTPS oder Lambda    | Lambda              | RSS via HTTP/HTTPS |
+
+<aside class="notes"><ul>
+<li>Custom Skills sind komplett frei in ihrer Art der Kommunikation,
+d.h. es sind längere Dialoge möglich, die dann im Backend in einer Session abgebildet werden<ul>
+<li>Ausnahme hier bei Custom Skill die Neuinstallation -&gt; UserId wird neu vergeben</li>
+</ul>
+</li>
+<li>bei Custom und Smart Home Skills kann man den Nutzer (wieder)erkennen</li>
+<li>mit OAuth ist auch Personenzuordnung möglich</li>
+<li>Custom Skills können Musikwiedergabe steuern</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+## User Perspektive
+
+* Custom Skill: mäh, Interaktionsmodell lernen
+* Smart Home: leichter Einstieg weil bekanntes Schema
+* Flash Briefing: langweilig!?
+
+</script></section><section data-markdown><script type="text/template">
+## DEV Perspektive
+
+* Custom Skill: cool, geht am meisten
+* Smart Home: schon ok, OAuth nervt
+* Flash Briefing: mäh
+
+<aside class="notes"><ul>
+<li>OAuth kann man bei Bedarf relativ einfach mit &quot;Login with Amazon&quot; erschlagen</li>
+</ul>
+</aside></script></section></section><section ><section data-markdown><script type="text/template">
+# Datenaustausch
+
+Beispiel für Custom Skill
+
+</script></section><section data-markdown><script type="text/template">
+## Request
+
+```json
+{
+  "session": ...,
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "EdwRequestId.306e0d8d-eb77-4332-ba51-f9c00cc1fb71",
+    "locale": "de-DE",
+    "timestamp": "2017-04-15T10:54:53Z",
+    "intent": {
+      "name": "GetNewRandomQuoteIntent",
+      "slots": {}
+    }
+  },
+  "version": "1.0"
+}
+```
+
+<aside class="notes"><ul>
+<li>request.type ist in der Regel IntentRequest; aber auch: StartSession</li>
+<li>locale: kann verwendet werden um Antwort-Sprache zu steuern, wenn Backend für
+mehrere Sprachen genutzt wird</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+## Request.session
+
+```json
+{
+    "sessionId": "SessionId.38b89391-41e6-4619-a50f-5a0be7167e95",
+    "application": {
+      "applicationId": "amzn1.ask.skill.48da98d2-94f8-41e0-967e-80704f167134"
+    },
+    "attributes": {},
+    "user": {
+      "userId": "amzn1.ask.account.AHX3TWXGFLO2BJM56WEEP5KYCCD22EQKHF2UWJOG3CNVSSYBONDGQWC26GFIZ5C7EJPNVPSUCK7P4U2PPVHXVMVTCRXQOB5K2WXOJFJRHKLGXSXGSPYCEAQKMD6HATTOXYUEVI2RKZQ2N7YTTJ7O2CGUUVPIRDWDP75ZVGD5CF7NTM44CXT2ED637ZRBAC3GELHNWQ5BHSKUCFQ"
+    },
+    "new": true
+  }
+```
+
+<aside class="notes"><ul>
+<li>sessionId: unique während einer Invocation</li>
+<li>attributes: ist ein Objekt, das der Skill während der Session selbst mit Inhalt füllen kann,
+initial ist dieses natürlich leer</li>
+<li>userId: ein Identifier, der bei Aktivierung des Skills durch den Nutzer vergeben wird
+und auch über mehrere Sessions hinweg konstant bleibt;
+lediglich bei Re-Aktivierung des Skills erfolgt Neuvergabe</li>
+<li>new: flag, ob die Session neu ist</li>
+</ul>
+</aside></script></section><section data-markdown><script type="text/template">
+## Response
+
+```json
+{
+  "version": "1.0",
+  "response": {
+    "outputSpeech": {
+      "type": "SSML",
+      "ssml": "<speak> ... </speak>"
+    },
+    "card": {
+      "content": "...",
+      "title": "Känguru's Falsche Zitate",
+      "type": "Simple"
+    },
+    "shouldEndSession": true
+  },
+  "sessionAttributes": {}
+}
+```
+
+<aside class="notes"><ul>
+<li>tellWithCard Antwort</li>
+<li>tell = Session wird beendet; keine Fragestellung</li>
+<li>sessionAttributes: nur relevant bei &quot;ask&quot;, hier kann ein Zustand mitgeschleppt werden</li>
+</ul>
+</aside></script></section></section><section  data-markdown><script type="text/template">
+# @TODO
+
+* SSML
+* evtl. Karten!?
+* Smart Home/IoT/MQTT Aufbau
+* Pricing
+</script></section></div>
+        </div>
+
+        <script src="./lib/js/head.min.js"></script>
+        <script src="./js/reveal.js"></script>
+
+        <script>
+            function extend() {
+              var target = {};
+              for (var i = 0; i < arguments.length; i++) {
+                var source = arguments[i];
+                for (var key in source) {
+                  if (source.hasOwnProperty(key)) {
+                    target[key] = source[key];
+                  }
+                }
+              }
+              return target;
+            }
+
+            // Optional libraries used to extend on reveal.js
+            var deps = [
+              { src: './lib/js/classList.js', condition: function() { return !document.body.classList; } },
+              { src: './plugin/markdown/marked.js', condition: function() { return !!document.querySelector('[data-markdown]'); } },
+              { src: './plugin/markdown/markdown.js', condition: function() { return !!document.querySelector('[data-markdown]'); } },
+              { src: './plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+              { src: './plugin/zoom-js/zoom.js', async: true },
+              { src: './plugin/notes/notes.js', async: true },
+              { src: './plugin/math/math.js', async: true }
+            ];
+
+            // default options to init reveal.js
+            var defaultOptions = {
+              controls: true,
+              progress: true,
+              history: true,
+              center: true,
+              transition: 'default', // none/fade/slide/convex/concave/zoom
+              dependencies: deps
+            };
+
+            // options from URL query string
+            var queryOptions = Reveal.getQueryHash() || {};
+
+            var options = {};
+            options = extend(defaultOptions, options, queryOptions);
+            Reveal.initialize(options);
+        </script>
+        
+          <script src="./scripts/mermaid.min.js"></script>
+          <script src="./scripts/mermaid-config.js"></script>
+    </body>
+</html>

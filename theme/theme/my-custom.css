@@ -1,0 +1,6 @@
+@import url("../css/theme/white.css");
+@import url("./mermaid.css");
+
+.reveal table, .reveal .mermaid {
+  font-size: 70%;
+}
