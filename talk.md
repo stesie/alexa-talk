@@ -332,10 +332,3 @@ Note:
 * tell = Session wird beendet; keine Fragestellung
 * sessionAttributes: nur relevant bei "ask", hier kann ein Zustand mitgeschleppt werden
 
-<!--s-->
-# @TODO
-
-* SSML
-* evtl. Karten!?
-* Smart Home/IoT/MQTT Aufbau
-* Pricing
